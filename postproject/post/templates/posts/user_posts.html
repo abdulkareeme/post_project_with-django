@@ -1,0 +1,35 @@
+{% load static %}
+{% block content %}
+    <link rel="stylesheet" href="{% static 'styles/list_of_user/user_post.css' %}">
+    <h2>Posts by {{ selected_user.username }}</h2>
+
+    {% if posts %}
+        {% for post in posts %}
+            <div class="post">
+                <h3> tittle is : {{ post.title }}</h3>
+                <p>content is :{{ post.content|truncatewords:30 }}</p>
+                {% if post.image %}
+                    <p>
+                        <img src="{{ post.image.url }}" alt="Post Image" style="max-width: 200px; height: auto;">
+                    </p>
+                {% else %}
+                    <p>There is no image.</p>
+                {% endif %}
+
+                {% if post.video %}
+                    <p>
+                        <video controls style="max-width: 300px; height: auto;">
+                            <source src="{{ post.video.url }}" type="video/mp4">
+                            متصفحك لا يدعم عرض الفيديو.
+                        </video>
+                    </p>
+                {% else %}
+                    <p>There is no video.</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>There isn't any posts yet.</p>
+    {% endif %}
+    <a href="{% url 'post:users-list' %}" class="btn-back">← Back to All Users</a>
+{% endblock %}

@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Django Channels (Daphne)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}\\postenv\\Scripts\\daphne.exe",
+            "args": [
+                "-b",
+                "0.0.0.0",
+                "-p",
+                "8000",
+                "postproject.asgi:application"
+            ],
+            "django": true,
+            "autoStartBrowser": false,
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}\\postenv\\Scripts\\python.exe",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "DJANGO_SETTINGS_MODULE": "postproject.settings",
+                "PYTHONIOENCODING": "UTF-8"
+            },
+            "envFile": "${workspaceFolder}\\.env"
+        }
+    ]
+}

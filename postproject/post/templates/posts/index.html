@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Posts</title>
+    <link rel="stylesheet" href="{% static 'styles/posts/index.css' %}">
+    
+</head>
+<body>
+    <form class = "logout-form" action="{% url 'logout' %}" method="POST">
+        {% csrf_token %}
+        <button type= "submit">Logout</button>
+    </form>
+    <!--  Button for Users -->
+    <form action="{% url 'post:users-list' %}" method="GET" class= "btn-user" style="display:inline;">
+        <button type="submit">Users</button>
+    </form>
+    <!-- Notification Icon -->
+    <!-- Place it after the Users button -->
+    {% if user.is_authenticated %}
+    <!-- Notification Icon -->
+    <div id="notification-container">
+        <button id="notificationBell" title="Notifications">
+            🔔<span id="notificationCount" style="display: none;">0</span>
+        </button>
+        <div id="notificationDropdown" style="display: none;">
+            <ul id="notificationList"></ul>
+        </div>
+    </div>
+
+    <!-- هذه الأسطر الجديدة تضعها هنا -->
+    <div id="notification-data" 
+        data-user-id="{{ user.id }}"
+        style="display: none;">
+    </div>
+
+    <script>
+        // متغيرات عامة يمكن استخدامها في notifications.js
+        window.currentUser = {
+            id: {{ user.id }},
+            isAuthenticated: true
+        };
+    </script>
+    <!-- انتهت الإضافات -->
+    {% endif %}
+        <!-- End Notification Icon -->
+    <div class="container">
+        <form method="GET" action="" class="search-form">
+            <input type="text" name="q" placeholder="Search by title or content..." value="{{ request.GET.q }}">
+            <button type="submit">Search</button>
+        </form>
+        <h1>All Posts</h1>
+
+        <a href="{% url 'post:create-post' %}" class="btn">Create New Post</a>
+
+        <div class="post-list">
+            {% if posts %}
+                {% for post in posts %}
+                    <div class="post">
+                        <h2>{{ post.title }}</h2>
+                        <p>{{ post.content|truncatewords:30 }}</p>
+
+                        <!-- Likes Section -->
+                        <div class="likes-section">
+                            <button type="button" class="like-button {% if user in post.likes.all %}liked{% endif %}" 
+                                    data-post-id="{{ post.pk }}" data-csrf-token="{{ csrf_token }}">
+                                {% if user in post.likes.all %}
+                                    ❤️
+                                {% else %}
+                                    🤍
+                                {% endif %}
+                            </button>
+                            <span class="like-count">{{ post.likes.count }} like{{ post.likes.count|pluralize }}</span>
+                        </div>
+                        <!-- Show Edit/Delete only if user is the author -->
+                        {% if user.is_authenticated and post.author == user %}
+                            <div class="actions">
+                                <a href="{% url 'post:update-post' post.pk %}" class="btn-edit">Edit</a>
+                                <a href="{% url 'post:delete-post' post.pk %}" class="btn-delete">Delete</a>
+                            </div>
+                        {% else %}
+                            <p>This post is not yours.</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No posts available.</p>
+            {% endif %}
+        </div>
+    </div>
+    <input type="hidden" id="csrf-token" value="{% csrf_token %}">
+    <script src="{% static 'js/like.js' %}"></script>
+    <!-- Load the Notifications JavaScript -->
+    {% if user.is_authenticated %}
+    <script src="{% static 'js/notifications.js' %}"></script>
+    {% endif %}
+    <!-- End Load Notifications JavaScript -->
+</body>
+</html>

@@ -1,0 +1,13 @@
+{% load static %}
+{% block content %}
+    <link rel="stylesheet" href="{% static 'styles/list_of_user/style.css' %}">
+    <h2>All Users</h2>
+    <ul>
+        {% for user in users %}
+            <li><a href="{% url 'post:user-posts' user.id %}">{{ user.username }}</a></li>
+        {% empty %}
+            <li>No users found.</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'post:index-post' %}" class="btn-back">← Back to All Posts</a>
+{% endblock %}

@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+pillow = "*"
+django-rest-knox = "*"
+djangorestframework = "*"
+django-filter = "*"
+channels = "*"
+channels-redis = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.13"
