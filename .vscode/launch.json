@@ -2,28 +2,42 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Django Channels (Daphne)",
+            "name": "Python: Django Channels (Daphne Debug)",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}\\postenv\\Scripts\\daphne.exe",
+            // بدلاً من تشغيل daphne.exe مباشرة، سنقوم بتشغيل python.exe مع daphne كوحدة.
+            // هذا غالبًا ما يكون أكثر موثوقية في بيئات التصحيح.
+            // المسار إلى مترجم Python داخل بيئتك الافتراضية.
+            "program": "${workspaceFolder}\\postenv\\Scripts\\python.exe",
             "args": [
+                "-m", // هذا يعني "تشغيل الوحدة النمطية"
+                "daphne", // الوحدة النمطية التي نريد تشغيلها
                 "-b",
                 "0.0.0.0",
                 "-p",
                 "8000",
+                // هذا هو المسار إلى كائن ASGI الرئيسي في مشروعك.
+                // "postproject" هو اسم مجلد مشروع Django الرئيسي.
                 "postproject.asgi:application"
             ],
             "django": true,
             "autoStartBrowser": false,
             "console": "integratedTerminal",
-            "python": "${workspaceFolder}\\postenv\\Scripts\\python.exe",
+            // هذا السطر لم يعد ضرورياً هنا بما أننا حددنا "program" بالفعل.
+            // "python": "${workspaceFolder}\\postenv\\Scripts\\python.exe",
+            // دليل العمل الحالي. يجب أن يكون هذا هو جذر مشروعك حيث يوجد manage.py.
+            // هذا حاسم لكي يتمكن Python من العثور على "postproject" كحزمة.
             "cwd": "${workspaceFolder}",
             "env": {
+                // **هذا السطر حاسم.** يضيف جذر المشروع إلى PYTHONPATH،
+                // مما يسمح لـ Python بالعثور على حزمة 'postproject'.
                 "PYTHONPATH": "${workspaceFolder}",
+                // تحديد ملف إعدادات Django.
                 "DJANGO_SETTINGS_MODULE": "postproject.settings",
                 "PYTHONIOENCODING": "UTF-8"
             },
-            "envFile": "${workspaceFolder}\\.env"
+            "envFile": "${workspaceFolder}\\.env", // تأكد من وجوده إذا كنت تستخدمه
+            "justMyCode": true
         }
     ]
 }
