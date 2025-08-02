@@ -47,7 +47,7 @@ class IndexApiPost(viewsets.ModelViewSet):
             post.likes.add(user)
             liked = True
             # --- Send Like Notification ---
-            if post.author and post.author.id: 
+            if post.author and post.author.id:
                 channel_layer = get_channel_layer()
                 async_to_sync(channel_layer.group_send)(
                     f"user_{post.author.id}_notifications", # Target user's group
@@ -57,10 +57,11 @@ class IndexApiPost(viewsets.ModelViewSet):
                             'type': 'like',
                             'message': f"{user.username} liked your post '{post.title}'.",
                             'postId': post.id,
+                            'liker_username': user.username,  # Added username for JavaScript
                         }
                     }
                 )
-            # --- End Send Like Notification ---  
+            # --- End Send Like Notification ---
 
         return Response({
             "status": "liked" if liked else "unliked",
@@ -131,6 +132,7 @@ class IndexApiPost(viewsets.ModelViewSet):
                         'message': f"{request.user.username} commented on your post '{post.title}'.",
                         'postId': post.id,
                         'commentId': comment.id,
+                        'commenter_username': request.user.username,  # Added username for JavaScript
                     }
                 }
             )

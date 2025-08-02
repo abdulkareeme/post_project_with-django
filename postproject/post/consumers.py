@@ -12,8 +12,20 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             await self.close()
         else:
             self.user = self.scope["user"]
+
+            # Get user_id from URL parameters (if available)
+            try:
+                self.user_id = self.scope['url_route']['kwargs']['user_id']
+                # Verify that the authenticated user matches the URL user_id for security
+                if self.user.id != self.user_id:
+                    await self.close()
+                    return
+            except (KeyError, TypeError):
+                # Fallback for testing or if URL route is not properly set
+                self.user_id = self.user.id
+
             self.group_name = f"user_{self.user.id}_notifications"  # تطابق مع api_views
-            
+
             await self.channel_layer.group_add(
                 self.group_name,
                 self.channel_name
@@ -31,11 +43,16 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     async def send_notification(self, event):
         try:
+            notification_data = event['notification_data']
             await self.send(text_data=json.dumps({
-                'type': event['notification_data']['type'],
-                'message': event['notification_data']['message'],
-                'postId': event['notification_data'].get('postId'),
-                'commentId': event['notification_data'].get('commentId')
+                'type': 'notification',  # Fixed: JavaScript expects 'notification'
+                'message': notification_data['message'],
+                'notification_type': notification_data['type'],  # Fixed: JavaScript expects 'notification_type'
+                'post_id': notification_data.get('postId'),  # Fixed: JavaScript expects 'post_id'
+                'comment_id': notification_data.get('commentId'),  # Fixed: JavaScript expects 'comment_id'
+                # Add username fields that JavaScript expects
+                'liker_username': notification_data.get('liker_username'),
+                'commenter_username': notification_data.get('commenter_username')
             }))
             
             # قم باستدعاء الدالة المتزامنة لحفظ الإشعار
